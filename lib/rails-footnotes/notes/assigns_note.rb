@@ -16,6 +16,8 @@ module Footnotes
                             :@view_runtime
                           ]
       cattr_accessor :ignored_assigns, :instance_writter => false
+      @@ignored_assigns_pattern = /^@_/
+      cattr_accessor :ignored_assigns_pattern, :instance_writter => false
 
       def initialize(controller)
         @controller = controller
@@ -26,28 +28,20 @@ module Footnotes
       end
 
       def valid?
-        assigns
+        assigns.present?
       end
 
       def content
-        rows = []
-        assigns.each do |key|
-          rows << [ key, escape(assigned_value(key)) ]
-        end
-        mount_table(rows.unshift(['Name', 'Value']), :class => 'name_values', :summary => "Debug information for #{title}")
+        mount_table(to_table, :summary => "Debug information for #{title}")
       end
 
       protected
+        def to_table
+          @to_table ||= assigns.inject([]) {|rr, var| rr << [var, escape(assigned_value(var))]}.unshift(['Name', 'Value'])
+        end
 
         def assigns
-          assign = []
-          ignored = @@ignored_assigns
-
-          @controller.instance_variables.each {|x| assign << x.intern }
-          @controller.protected_instance_variables.each {|x| ignored << x.intern } if @controller.respond_to? :protected_instance_variables
-
-          assign -= ignored
-          return assign
+          @assigns ||= @controller.instance_variables.map {|v| v.to_sym}.select {|v| v.to_s !~ ignored_assigns_pattern } - ignored_assigns
         end
 
         def assigned_value(key)

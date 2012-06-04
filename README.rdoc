@@ -17,7 +17,11 @@ Install Rails Footnotes is very easy.
 
 === Rails 3.x
 
-   gem 'rails-footnotes', '>= 3.7', :group => :development
+   gem 'rails-footnotes', '>= 3.7.5.rc4', :group => :development
+
+After you install RailsFootnotes and add it to your Gemfile, you need to run the generator:
+
+  rails generate rails_footnotes:install
 
 === Rails 2.x
 
@@ -27,7 +31,7 @@ In RAILS_ROOT/config/environments/development.rb (yes, you want it only in devel
 
 == Configuration
 
-For version greater then 3.7.0
+For version greater than 3.7.0
 
 If you want to add alternate logic to enable or disable footnotes,
 add something like this to config/initializers/footnotes.rb:
@@ -65,6 +69,9 @@ for MacVim
 Where you are going to choose a prefix compatible with your text editor. The %s is
 replaced by the name of the file, the first %d is replaced by the line number and
 the second %d is replaced by the column.
+
+Take note that the order in which the file name (%s), line number (%d) and column number (%d) appears is important. 
+We assume that they appear in that order. "foo://line=%d&file=%s" (%d precedes %s) would throw out an error.
 
 By default, footnotes are appended at the end of the page with default stylesheet. If you want
 to change their position, you can define a div with id "footnotes_holder" or define your own stylesheet
@@ -125,7 +132,14 @@ Then put in your environment:
 
   Footnotes::Filter.notes += [:current_user]
 
-== Colaborators
+== Display of the notes
+
+By default the notes will be showed at the bottom of your page (appended just before </body>).
+If you'd like these notes on a different place (perhaps for aesthetical reasons) you can edit one of your views and add:
+  <div id="footnotes_holder"></div>
+at an appropriate place, your notes will now appear inside div#footnotes_holder
+
+== Collaborators
 
 * Leon Li       - http://github.com/scorpio
 * Keenan Brock  - http://github.com/kbrock

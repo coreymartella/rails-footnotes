@@ -1,6 +1,7 @@
 .*
 !.gitignore
 !.gitmodules
+!.travis.yml
 !*.example
 *.gem
 .bundle
@@ -9,3 +10,4 @@ pkg/*
 coverage
 tags
 doc
+bin
