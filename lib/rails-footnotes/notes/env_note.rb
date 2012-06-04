@@ -6,7 +6,7 @@ module Footnotes
       end
 
       def content
-        env_data = @env.to_a.sort.unshift([:key, :value]).map do |k,v|
+        env_data = @env.to_a.sort_by{|k,v| k.to_s}.unshift([:key, :value]).map do |k,v|
           case k
           when 'HTTP_COOKIE'
             # Replace HTTP_COOKIE for a link
