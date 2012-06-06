@@ -35,7 +35,7 @@ module Footnotes
         def add(*args, &block)
           super
           logged_message = args.last
-          Footnotes::Notes::LogNote.log(logged_message.strip + "\n")
+          Footnotes::Notes::LogNote.log(logged_message.to_s.strip + "\n")
           logged_message
         end
       end
