@@ -1,25 +1,46 @@
+require 'rails-footnotes/notes/log_note'
 module Footnotes
   module Notes
-    class LayoutNote < AbstractNote
+    class LayoutNote < LogNote
       def initialize(controller)
+        super
         @controller = controller
       end
 
       def row
         :edit
       end
-
+      
+      def title
+        "Layout"
+      end
+      
       def link
         escape(Footnotes::Filter.prefix(filename, 1, 1))
       end
 
       def valid?
-        prefix? && nil#@controller.active_layout TODO doesn't work with Rails 3
+        prefix? && filename.present?
       end
 
       protected
         def filename
-          File.join(File.expand_path(Rails.root), 'app', 'layouts', "#{@controller.active_layout.to_s.underscore}").sub('/layouts/layouts/', '/views/layouts/')
+          @filename ||= begin
+            yell "detecting filename from log: #{log}"
+            full_filename = nil
+            log.split("\n").each do |line|
+              next if line !~ /Rendered \S*\s*within\s*(\S*)/
+              
+              file = line[/Rendered \S*\s*within\s*(\S*)/, 1]
+              yell "got file: #{file}"
+              @controller.view_paths.each do |view_path|
+                path = File.join(view_path.to_s, "#{file}*")
+                full_filename ||= Dir.glob(path).first
+              end
+              yell "after viewpaths: #{full_filename}"
+            end
+            full_filename
+          end
         end
     end
   end
