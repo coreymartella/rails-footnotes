@@ -107,7 +107,7 @@ module Footnotes
       end
 
       def valid_format?
-        if @template # Rails 2.x
+        if @template && @template.respond_to?(template_format_method.to_sym)# Rails 2.x
           [:html,:rhtml,:xhtml,:rxhtml].include?(@template.send(template_format_method.to_sym).to_sym)
         else # Rails 3
           @controller.response.content_type == 'text/html'
